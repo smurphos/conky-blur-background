@@ -1,0 +1,43 @@
+conky.config = {
+    own_window = true,
+    own_window_class = 'Conky',
+    own_window_type = 'desktop',
+    own_window_transparent = true,
+    own_window_argb_visual = false,
+    own_window_title = 'conky-blur-sample',
+    minimum_width = 420,
+    double_buffer = true,
+    alignment = 'top_right',
+    gap_x = 60,
+    gap_y = 120,
+    use_xft = true,
+    xftalpha = 1,
+    font = 'Ubuntu-Mono:size=12',
+    default_color = 'white',
+    override_utf8_locale = true,
+    draw_shades = true,
+    draw_outline = true,
+    default_outline_color = 'black',
+    default_shade_color = 'black',
+    draw_borders = false,
+    border_inner_margin = 5,
+    border_outer_margin = 5,
+    update_interval = 1
+}
+
+conky.text = [[
+${image ~/.conky/conky_blurred_background/conky-blur-sample.png -n -p -1,-1}${image ~/.conky/images/cinnamon.png -n -p 20,20 -s 128x128}
+${voffset 8}${font :size=18}${alignr}${execi 3600 bash -c 'source /etc/os-release; echo "$NAME $VERSION"'}
+${alignr}${execi 3600 cinnamon --version}
+${alignr}${kernel}${font}
+${exec conky-blur-background.sh}
+${voffset 60}${alignc}${font :size=14}${time It's %A, %B %d, %Y}
+${voffset 12}${alignc}${time The time is %H:%M}${font}
+${voffset 36}CPU:${goto 60}${freq_g 0}GHz${alignr}${cpu cpu0}%${alignr}${tab 5,0}${cpubar cpu0 5,100}
+${voffset 12}RAM:${goto 60}${mem} / ${memmax} ${alignr}${memperc}%${tab 5,0}${membar 5,100}
+${voffset 12}Swap:${goto 60}${swap} / ${swapmax} ${alignr}${swapperc}%${tab 5,0}${swapbar 5,100}
+${if_mounted /boot}${voffset 12}Root:${goto 60}${fs_used /boot} / ${fs_size /boot} ${alignr}${fs_used_perc /boot}%${tab 5,0}${fs_bar 5,100 /boot}${endif}
+${if_mounted /}${voffset 12}Root:${goto 60}${fs_used /} / ${fs_size /} ${alignr}${fs_used_perc /}%${tab 5,0}${fs_bar 5,100 /}${endif}
+${if_mounted /home}${voffset 12}Home:${goto 60}${fs_used /home} / ${fs_size /home} ${alignr}${fs_used_perc /home}%${tab 5,0}${fs_bar 5,100 /home}${endif}
+${voffset 8}
+]]

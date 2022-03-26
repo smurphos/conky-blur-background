@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Exec=sh -c 'conky -c ~/.conky/conky-blur-sample/blur-sample.conky'
+X-GNOME-Autostart-enabled=true
+NoDisplay=false
+Hidden=false
+Name=conky-blur-sample
+Comment=No description
+X-GNOME-Autostart-Delay=10
+Name[en_GB]=conky-blur-sample.desktop
