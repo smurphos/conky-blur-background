@@ -35,7 +35,7 @@ The text section of the conky must include:
 
 In the first line :
 
-`${image ~/.conky/conky_blurred_background/<unique-name>.png -n -p -1,-1}` (<unique-name> is the same name you use for own_window_title above)
+`${image ~/.conky/conky_blurred_background/<unique-name>.png -n -p -1,-1}` (`<unique-name>` is the same name you use for `own_window_title` above)
 
 Anywhere in the body of the conky text:
 
