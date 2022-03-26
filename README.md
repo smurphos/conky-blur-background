@@ -7,8 +7,8 @@ It is intended to add support for additional desktop environments in time.
 
 ## Contributors
 
-[smurphos](https://github.com/smurphos)
-[Koentje](https://forums.linuxmint.com/memberlist.php?mode=viewprofile&u=317124)
+* [smurphos](https://github.com/smurphos)
+* [Koentje](https://forums.linuxmint.com/memberlist.php?mode=viewprofile&u=317124)
 
 ## Screenshots
 
@@ -18,7 +18,8 @@ It is intended to add support for additional desktop environments in time.
 
 ## How to use
 
-The script is shipped with a basic conky config for demonstration purposes. It can also be used with any conky config that has the following characteristics.
+The script is shipped with a basic conky config for demonstration purposes.
+It can also be used with any conky config that has the following characteristics.
 
 The conky.config section must include :
 
@@ -28,7 +29,7 @@ The conky.config section must include :
 * `own_window_transparent = true,`
 * `own_window_argb_visual = false,`
 
-To ensure the conky blurred background updates in a timely manner following a wallpaper change a short update_interval is also recommended
+To ensure the conky blurred background updates in a timely manner following a wallpaper change a short `update_interval` is also recommended
 
 The text section of the conky must include:
 
@@ -40,7 +41,7 @@ Anywhere in the body of the conky text:
 
 `${exec conky-blur-background.sh}`
 
-conky-blur-background.sh can also be executed from your conky with optional arguments. These are
+`conky-blur-background.sh` can also be executed from your conky with optional arguments. These are
 
 * `-blurradius=` (Integer between 0 and 10)
 * `-blursigma=` (Integer between 0 and 40)
@@ -75,16 +76,16 @@ Download the current release
 Extract files from the zip
 * `unzip -o conky-blur-background.zip`
 
-Move the script to ~/.local/bin
-* `mv ./conky-blur-background/script/conky-blur-background.sh ~/.local/bin/`
+Copy the script to ~/.local/bin
+* `cp -r ./conky-blur-background/script/conky-blur-background.sh ~/.local/bin/`
 
 If you want to test with the sample conky config that is included:
 
-Move the conky files to ~.conky
-* `mv ./conky-blur-background/conky-blur-sample ~/.conky/`
+Copy the conky files to ~/.conky
+* `cp -r./conky-blur-background/conky-blur-sample ~/.conky/`
 
-Move the desktop file to ~/.config/autostart
-* `mv ./conky-blur-background/conky-blur-sample ~/.conky/`
+Copy the desktop file to ~/.config/autostart
+* `cp -r ./conky-blur-background/autostart/conky-blur-sample.desktop ~/.config/autostart/`
 
 ## Reporting issues
 
