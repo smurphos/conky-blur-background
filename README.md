@@ -68,7 +68,7 @@ Create  ~/.local/bin if it doesn't already exists.
 * `mkdir -p ~/.local/bin`
 
 Download the current release
-* `wget -o TBC`
+* `wget https://github.com/smurphos/conky-blur-background/raw/main/releases/current/conky-blur-background.zip`
 
 Extract files from the zip
 * `unzip -o conky-blur-background.zip`
