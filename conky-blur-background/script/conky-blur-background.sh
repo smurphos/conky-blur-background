@@ -51,8 +51,14 @@ function clear_wallpaper_cache {
 function write_wallpaper {
 	# Create mask for curved corners
 	convert -size "$WIDTH"x"$HEIGHT" xc:white -draw "roundRectangle 0,0 $WIDTH,$HEIGHT $CURVINESS,$CURVINESS" /tmp/"$CONKY_WINDOW"_background_mask.png
+	if [ $? -gt  0 ]; then
+		report_error "ERROR: Failed to create mask"
+	fi
 	# Apply mask, blur and contrast changes to crop
 	convert /tmp/"$CONKY_WINDOW"_background.png -mask /tmp/"$CONKY_WINDOW"_background_mask.png -blur "$BLUR" -brightness-contrast "$BRIGHTNESS" +mask ~/.conky/conky_blurred_background/"$CONKY_WINDOW".png
+	if [ $? -gt  0 ]; then
+		report_error "ERROR: Failed to create masked image"
+	fi
 	# Write the wallpaper cache
 	echo "${WALLPAPER["$1"]}" > ~/.conky/conky_blurred_background/"$CONKY_WINDOW"_wallpaper_cache
 	rm -f ~/.conky/conky_blurred_background/"$CONKY_WINDOW"_Geometry_*
@@ -280,14 +286,23 @@ done
 if [ "${#WALLPAPER[@]}" -eq 1 ] && [ "${WALL_RES[0]}" == "$SCREEN_RES" ]; then
 	# Crop the wallpaper to match conky window geometry
 	convert "${WALLPAPER[0]}" -crop "$WIDTH"x"$HEIGHT""$TOP_LEFT" /tmp/"$CONKY_WINDOW"_background.png
+	if [ $? -gt  0 ]; then
+		report_error "ERROR: Initial wallpaper crop to conky geometry failed"
+	fi
 	write_wallpaper 0
 fi
 # Scenario 2 - Single wallpaper cache but image smaller than screen (implies background setting of Scaled or Spanned with an image that is too small)
 if [ "${#WALLPAPER[@]}" -eq 1 ]; then
 	# resize the image to the screen dimensions with empty space transparent.
 	convert "${WALLPAPER[0]}" -resize "$SCREEN_WIDTH"x"$SCREEN_HEIGHT" -background "rgba(255,255,255,0)" -gravity center -extent "$SCREEN_WIDTH"x"$SCREEN_HEIGHT" /tmp/"$CONKY_WINDOW"_resized_background.png
+	if [ $? -gt  0 ]; then
+		report_error "ERROR: Initial wallpaper resize failed"
+	fi
 	# Crop the wallpaper to match conky window geometry
 	convert /tmp/"$CONKY_WINDOW"_resized_background.png -crop "$WIDTH"x"$HEIGHT""$TOP_LEFT" /tmp/"$CONKY_WINDOW"_background.png
+	if [ $? -gt  0 ]; then
+		report_error "ERROR: Initial wallpaper crop to conky geometry failed"
+	fi
 	write_wallpaper 0
 fi
 # Now we have a situation where we have multiple monitors and multiple wall paper cache files.
@@ -318,11 +333,20 @@ for i in "${MONITOR_RES[@]}"; do
 		if [ "${WALL_RES[counter]}" == "$MON_WIDTH"x"$MON_HEIGHT" ]; then
 			# Crop the wallpaper to match conky window geometry
 			convert "${WALLPAPER[counter]}" -crop "$WIDTH"x"$HEIGHT""$TOP_LEFT_ADJ" /tmp/"$CONKY_WINDOW"_background.png
+			if [ $? -gt  0 ]; then
+				report_error "ERROR: Initial wallpaper crop to conky geometry failed"
+			fi
 			write_wallpaper $counter
 		else
 			convert "${WALLPAPER[counter]}" -resize "$MON_WIDTH"x"$MON_HEIGHT" -background "rgba(255,255,255,0)" -gravity center -extent "$MON_WIDTH"x"$MON_HEIGHT" /tmp/"$CONKY_WINDOW"_resized_background.png
+			if [ $? -gt  0 ]; then
+				report_error "ERROR: Initial wallpaper resize failed"
+			fi
 			# Crop the wallpaper to match conky window geometry
 			convert /tmp/"$CONKY_WINDOW"_resized_background.png -crop "$WIDTH"x"$HEIGHT""$TOP_LEFT_ADJ" /tmp/"$CONKY_WINDOW"_background.png
+			if [ $? -gt  0 ]; then
+				report_error "ERROR: Initial wallpaper crop to conky geometry failed"
+			fi
 			write_wallpaper $counter
 		fi
 	fi
