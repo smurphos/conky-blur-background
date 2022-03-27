@@ -24,8 +24,8 @@ It can also be used with any conky config that has the following characteristics
 The conky.config section must include :
 
 * `own_window = true,`
-* `own_window_type = 'desktop',` or `own_window_type = 'dock',`)  
-* `own_window_title = '<unique-name>',` (this should be an unique name for every conky config if you use more than one. Do not use spaces)
+* `own_window_type = 'desktop',` or `own_window_type = 'dock',` 
+* `own_window_title = '<unique-name>',` this should be an unique name for every conky config if you use more than one. Do not use spaces.
 * `own_window_transparent = true,`
 * `own_window_argb_visual = false,`
 
@@ -65,10 +65,7 @@ The script requires the packages wmctrl, imagemagick, x11-xserver-utils, x11-uti
 ## Installation via the terminal.
 
 Create  ~/.local/bin if it doesn't already exists.
-* `mkdir -f ~/.local/bin`
-
-Move to /tmp directory
-* `cd /tmp`
+* `mkdir -p ~/.local/bin`
 
 Download the current release
 * `wget -o TBC`
@@ -79,13 +76,17 @@ Extract files from the zip
 Copy the script to ~/.local/bin
 * `cp -r ./conky-blur-background/script/conky-blur-background.sh ~/.local/bin/`
 
+If ~/.local/bin/ didn't exist prior to this installation a log off and back on will be required to ensure the system adds this directory to your `$PATH` before you use the script from a conky config.
+
 If you want to test with the sample conky config that is included:
 
 Copy the conky files to ~/.conky
-* `cp -r./conky-blur-background/conky-blur-sample ~/.conky/`
+* `cp -r ./conky-blur-background/conky-blur-sample ~/.conky/`
 
 Copy the desktop file to ~/.config/autostart
 * `cp -r ./conky-blur-background/autostart/conky-blur-sample.desktop ~/.config/autostart/`
+
+Log off and back in
 
 ## Reporting issues
 
@@ -93,5 +94,5 @@ If you need to raise a issue reporting a problem with the script please attach t
 
 1) A screenshot!
 2) Output of terminal command `cat ~/.xsession-errors` run during the session the bug occurred.
-3) Output of terminal command `ls -a ~/.conky/conky_blurred_background` run during the session the bug occured
-4) if using your own conky config a copy of that config.
+3) Output of terminal command `ls -a ~/.conky/conky_blurred_background` run during the session the bug occurred.
+4) If using your own conky config a copy of that config.
