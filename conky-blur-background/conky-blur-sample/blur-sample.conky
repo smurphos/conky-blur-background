@@ -29,7 +29,7 @@ conky.config = {
 }
 
 conky.text = [[
-${image ~/.conky/conky_blurred_background/conky-blur-sample.png -n -p -1,-1}${image ~/.conky/images/cinnamon.png -n -p 20,20 -s 128x128}
+${image ~/.conky/conky_blurred_background/conky-blur-sample.png -n -p -1,-1}${image ~/.conky/cinnamon.png -n -p 20,20 -s 128x128}
 ${voffset 8}${font :size=18}${alignr}${execi 3600 bash -c 'source /etc/os-release; echo "$NAME $VERSION"'}
 ${alignr}${execi 3600 cinnamon --version}
 ${alignr}${kernel}${font}
