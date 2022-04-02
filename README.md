@@ -60,7 +60,7 @@ Example of a command within the conky text using arguments:
 
 ## Dependencies
 
-The script requires the packages wmctrl, imagemagick, x11-xserver-utils, x11-utils & dconf-cli to be installed.
+The script requires the packages conky-all, wmctrl, imagemagick, x11-xserver-utils, x11-utils & dconf-cli to be installed.
 
 ## Installation via the terminal.
 
@@ -81,7 +81,7 @@ If ~/.local/bin/ didn't exist prior to this installation a log off and back on w
 If you want to test with the sample conky config that is included:
 
 Copy the conky files to ~/.conky
-* `cp -r ./conky-blur-background/conky-blur-sample ~/.conky/`
+* `cp -r ./conky-blur-background/conky-blur-sample ~/.conky/conky-blur-sample`
 
 Copy the desktop file to ~/.config/autostart
 * `cp -r ./conky-blur-background/autostart/conky-blur-sample.desktop ~/.config/autostart/`
