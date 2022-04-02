@@ -1,5 +1,5 @@
 -- Sample config for conky-blur-background script
--- Version 0.1
+-- Version 0.2
 
 conky.config = {
     own_window = true,

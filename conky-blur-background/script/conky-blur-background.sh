@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version 0.1
+# Version 0.2
 # GPL3
 # Conrtibutors - smurphos & Koentje
 
