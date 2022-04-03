@@ -2,8 +2,14 @@
 
 A bash script intended to be run from a conky config to create a blurred conky background image based on the underlying desktop wallpaper.
 
-The initial release is compatible with the Cinnamon desktop environment only.
-It is intended to add support for additional desktop environments in time.
+## Compatibility
+
+The script is currently limited to the following desktop environments.
+
+Cinnamon (developed and tested on Cinnamon 5.2.7 - Linux Mint 20.3)
+MATE (partially tested on MATE 1.26 - Linux Mint 20.3)
+
+It is intended to add support for additional Desktop Environments in future.
 
 ## Contributors
 

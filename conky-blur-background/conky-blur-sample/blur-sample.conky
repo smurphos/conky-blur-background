@@ -31,9 +31,14 @@ conky.config = {
 }
 
 conky.text = [[
-${image ~/.conky/conky_blurred_background/conky-blur-sample.png -n -p -1,-1}${image ~/.conky/cinnamon.png -n -p 20,20 -s 128x128}
+${image ~/.conky/conky_blurred_background/conky-blur-sample.png -n -p -1,-1}\
+${if_match "${execpi 3600 echo $DESKTOP_SESSION}" == "cinnamon"}${image ~/.conky/conky-blur-sample/cinnamon.png -n -p 20,20 -s 128x128}\
+${else}${if_match "${execpi 3600 echo $DESKTOP_SESSION}" == "mate"}${image ~/.conky/conky-blur-sample/mate.png -n -p 20,20 -s 128x128}\
+${endif}${endif}
 ${voffset 8}${font :size=18}${alignr}${execi 3600 bash -c 'source /etc/os-release; echo "$NAME $VERSION"'}
-${alignr}${execi 3600 cinnamon --version}
+${if_match "${execpi 3600 echo $DESKTOP_SESSION}" == "cinnamon"}${alignr}${execi 3600 cinnamon --version}\
+${else}${if_match "${execpi 3600 echo $DESKTOP_SESSION}" == "mate"}${alignr}MATE ${execi 3600 mate-about --version | cut -d" " -f4}\
+${endif}${endif}
 ${alignr}${kernel}${font}
 ${exec conky-blur-background.sh}\
 ${voffset 60}${alignc}${font :size=14}${time It's %A, %B %d, %Y}

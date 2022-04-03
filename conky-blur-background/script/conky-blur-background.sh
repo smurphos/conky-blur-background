@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Version 0.2
+# Version 0.3
 # GPL3
 # Contributors - smurphos & Koentje
 
-# A script for the Cinnamon desktop to launch from your conky to set a blurred background image based on your current wallpaper.
+# A script for the Cinnamon & Mate desktops to launch from your conky to set a blurred background image based on your current wallpaper.
 # The background will update automatically with changes in wallpaper and changes in conky window geometry.
 
 # The conky.config section of your conky must include :
@@ -46,10 +46,10 @@
 #Functions
 
 function clear_wallpaper_cache {
-    DCONF_WALL=$(dconf read /org/cinnamon/desktop/background/picture-uri)
-	rm -r ~/.cache/wallpaper
-	dconf write /org/cinnamon/desktop/background/picture-uri "0"
-	dconf write /org/cinnamon/desktop/background/picture-uri "$DCONF_WALL"
+    DCONF_WALL=$(dconf read "$DCONF_KEY")
+    rm -r ~/.cache/wallpaper
+    dconf write "$DCONF_KEY" "0"
+    dconf write "$DCONF_KEY" "$DCONF_WALL"
 }
 
 function write_wallpaper {
@@ -151,6 +151,12 @@ TOP_LEFT=$(echo "$XWININFO_OUTPUT" | grep "Corners:" | awk '{print $2}')
 # Currently Cinnamon only - MATE may be supported in future
 if [ "$DESKTOP_SESSION" == "cinnamon" ]; then
 	WALLPAPER_CACHE="$HOME/.cache/wallpaper/"
+	SPANNED=0_6_
+	DCONF_KEY=/org/cinnamon/desktop/background/picture-uri
+elif [ "$DESKTOP_SESSION" == "mate" ]; then
+	WALLPAPER_CACHE="$HOME/.cache/mate/background/"
+	SPANNED=0_5_
+	DCONF_KEY=/org/mate/desktop/background/picture-filename
 else
 	report_error "ERROR: Unsupported Desktop Environment. Currently only Cinnamon is supported."
 fi
@@ -257,7 +263,7 @@ fi
 # Get current wallpaper(s)
 WALLPAPER=("$WALLPAPER_CACHE"*)
 # If cache has multiple wallpapers, but the first one is spanned, clear cache and reload, as the later ones are stale
-if [ "${#WALLPAPER[@]}" -gt 1 ] && echo "${WALLPAPER[0]}" | grep -q "0_6_"; then
+if [ "${#WALLPAPER[@]}" -gt 1 ] && echo "${WALLPAPER[0]}" | grep -q "$SPANNED"; then
 	clear_wallpaper_cache
 	WALLPAPER=("$WALLPAPER_CACHE"*)
 fi

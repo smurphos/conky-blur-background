@@ -7,4 +7,5 @@ Hidden=false
 Name=conky-blur-sample
 Comment=No description
 X-GNOME-Autostart-Delay=10
-Name[en_GB]=conky-blur-sample.desktop
+X-MATE-Autostart-Delay=10
+Name=conky-blur-sample.desktop
