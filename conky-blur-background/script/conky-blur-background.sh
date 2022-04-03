@@ -2,7 +2,7 @@
 
 # Version 0.2
 # GPL3
-# Conrtibutors - smurphos & Koentje
+# Contributors - smurphos & Koentje
 
 # A script for the Cinnamon desktop to launch from your conky to set a blurred background image based on your current wallpaper.
 # The background will update automatically with changes in wallpaper and changes in conky window geometry.
