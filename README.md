@@ -6,8 +6,8 @@ A bash script intended to be run from a conky config to create a blurred conky b
 
 The script is currently limited to the following desktop environments.
 
-Cinnamon (developed and tested on Cinnamon 5.2.7 - Linux Mint 20.3)
-MATE (partially tested on MATE 1.26 - Linux Mint 20.3)
+* Cinnamon (developed and tested on Cinnamon 5.2.7 - Linux Mint 20.3)
+* MATE (partially tested on MATE 1.26 - Linux Mint 20.3)
 
 It is intended to add support for additional Desktop Environments in future.
 
@@ -70,8 +70,11 @@ The script requires the packages conky-all, wmctrl, imagemagick, x11-xserver-uti
 
 ## Installation via the terminal.
 
-Create  ~/.local/bin if it doesn't already exists.
+Create  directories for install if they don't already exist.
 * `mkdir -p ~/.local/bin`
+
+If ~/.local/bin/ didn't exist prior to this installation a log off and back on will be required to ensure the system adds this directory to your `$PATH` before you use the script from a conky config.
+
 
 Download the current release
 * `wget https://github.com/smurphos/conky-blur-background/raw/main/releases/current/conky-blur-background.zip`
@@ -82,9 +85,12 @@ Extract files from the zip
 Copy the script to ~/.local/bin
 * `cp -r ./conky-blur-background/script/conky-blur-background.sh ~/.local/bin/`
 
-If ~/.local/bin/ didn't exist prior to this installation a log off and back on will be required to ensure the system adds this directory to your `$PATH` before you use the script from a conky config.
-
 If you want to test with the sample conky config that is included:
+
+Create  directories for install if they don't already exist.
+
+* `mkdir -p ~/.conky`
+* `mkdir -p ~/.config/autostart`
 
 Copy the conky files to ~/.conky
 * `cp -r ./conky-blur-background/conky-blur-sample/ ~/.conky/`
