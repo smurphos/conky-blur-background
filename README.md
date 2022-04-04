@@ -87,7 +87,7 @@ If ~/.local/bin/ didn't exist prior to this installation a log off and back on w
 If you want to test with the sample conky config that is included:
 
 Copy the conky files to ~/.conky
-* `cp -r ./conky-blur-background/conky-blur-sample ~/.conky/conky-blur-sample`
+* `cp -r ./conky-blur-background/conky-blur-sample/ ~/.conky/`
 
 Copy the desktop file to ~/.config/autostart
 * `cp -r ./conky-blur-background/autostart/conky-blur-sample.desktop ~/.config/autostart/`
