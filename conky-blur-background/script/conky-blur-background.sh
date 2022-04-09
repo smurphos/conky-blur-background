@@ -45,6 +45,20 @@
 
 #Functions
 
+function report_error {
+	# Estimate columns available from conky geometry and default font size. If no geometry available default to 60 columns for wrapping of error messages.
+	if [ "$WIDTH" ] ; then
+		FONT_SIZE=$(grep -w 'font = ' "$CONKY_CONF" | xargs | cut -d'=' -f3 | sed s/,*$//g)
+		# Assume characters are square (will underestimate columns needed for nearly all fonts)
+		COLUMNS=$(( WIDTH / FONT_SIZE ))
+	else
+		COLUMNS=60
+	fi
+	echo -e "$1\n" | fold -s -w "$COLUMNS"
+	exit 1
+}
+
+# Forces the wallpaper cache in Cinnamon/MATE to refresh
 function clear_wallpaper_cache {
     DCONF_WALL=$(dconf read "$DCONF_KEY")
     rm -r ~/.cache/wallpaper
@@ -66,19 +80,6 @@ function write_wallpaper {
 	rm -f ~/.conky/conky_blurred_background/"$CONKY_WINDOW"_Geometry_*
 	touch ~/.conky/conky_blurred_background/"$CONKY_WINDOW"_Geometry_"$WIDTH"x"$HEIGHT""$TOP_LEFT"_Params_"$BLUR"_"$BRIGHTNESS"_"$CURVINESS"
 	exit 0
-}
-
-function report_error {
-	# Estimate columns available from conky geometry and default font size. If no geometry available default to 60 columns for wrapping of error messages.
-	if [ "$WIDTH" ] ; then
-		FONT_SIZE=$(grep -w 'font = ' "$CONKY_CONF" | xargs | cut -d'=' -f3 | sed s/,*$//g)
-		# Assume characters are square (will underestimate columns needed for nearly all fonts)
-		COLUMNS=$(( WIDTH / FONT_SIZE ))
-	else
-		COLUMNS=60
-	fi
-	echo -e "$1\n" | fold -s -w "$COLUMNS"
-	exit 1
 }
 
 # Main script starts here
