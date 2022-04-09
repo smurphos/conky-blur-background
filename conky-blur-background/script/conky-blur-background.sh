@@ -9,6 +9,7 @@
 
 # The conky.config section of your conky must include :
 #   - own_window = true,
+#   - own_window_class = 'Conkyblurred',
 #   - own_window_type = 'desktop',         (or dock)
 #   - own_window_title = '<unique-name>',  (this should be an unique name for every conky config if you use more than one. Do not use spaces)
 #   - own_window_transparent = true,
@@ -132,12 +133,15 @@ if [ ! "$CONKY_WINDOW" ]; then
 fi
 
 # Get conky window ID
-CONKY_WINDOW_ID=$(wmctrl -l | grep -e "-1 $(hostname) $CONKY_WINDOW" | awk '{print $1}')
-# If empty string exit - conky will rerun the script at the next interval update
+CONKY_WINDOW_ID=$(wmctrl -lx | grep "Conkyblurred.Conkyblurred.*$CONKY_WINDOW" | awk '{print $1}')
+# If empty string error - conky will rerun the script at the next interval update
 if [ ! "$CONKY_WINDOW_ID" ]; then
- exit 1
+	report_error "ERROR: Could not find conky window ID $CONKY_WINDOW_ID"
 fi
-
+# Spaces in output indicates multiple IDs found
+if [[ $CONKY_WINDOW_ID != ${CONKY_WINDOW_ID%[[:space:]]*} ]] ; then 
+	report_error "ERROR: Multiple windows found. Check that all your conky configs have a unique own_window_title."
+fi
 # Get conky window geometry (do this early so we have a WIDTH variable for any further errors)
 XWININFO_OUTPUT=$(xwininfo -id "$CONKY_WINDOW_ID")
 WIDTH=$(echo "$XWININFO_OUTPUT" | grep "Width:" | awk '{print $2}')

@@ -32,6 +32,7 @@ The conky.config section must include :
 * `own_window = true,`
 * `own_window_type = 'desktop',` or `own_window_type = 'dock',` 
 * `own_window_title = '<unique-name>',` this should be an unique name for every conky config if you use more than one. Do not use spaces.
+* `own_window_class = 'Conkyblurred',`
 * `own_window_transparent = true,`
 * `own_window_argb_visual = false,`
 
