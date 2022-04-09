@@ -153,7 +153,7 @@ HEIGHT=$(echo "$XWININFO_OUTPUT" | grep "Height:" | awk '{print $2}')
 TOP_LEFT=$(echo "$XWININFO_OUTPUT" | grep "Corners:" | awk '{print $2}')
 
 # Set wallpaper cache location for desktop environment.
-# Currently Cinnamon only - MATE may be supported in future
+# Currently Cinnamon & MATE only
 if [ "$DESKTOP_SESSION" == "cinnamon" ]; then
 	WALLPAPER_CACHE="$HOME/.cache/wallpaper/"
 	SPANNED=0_6_
@@ -163,7 +163,7 @@ elif [ "$DESKTOP_SESSION" == "mate" ]; then
 	SPANNED=0_5_
 	DCONF_KEY=/org/mate/desktop/background/picture-filename
 else
-	report_error "ERROR: Unsupported Desktop Environment. Currently only Cinnamon is supported."
+	report_error "ERROR: Unsupported Desktop Environment. Currently only Cinnamon & MATE are supported."
 fi
 
 # Validate other conky config characteristics
