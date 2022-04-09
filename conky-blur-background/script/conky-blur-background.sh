@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Version 0.3
+# Version 0.4
 # GPL3
 # Contributors - smurphos & Koentje
 
@@ -67,6 +67,36 @@ function clear_wallpaper_cache {
     dconf write "$DCONF_KEY" "$DCONF_WALL"
 }
 
+# Used to create an image identical to onscreen wallpaper for users with a tiled wallpaper.
+function resize_tiled {
+	if ! convert -size "$1" tile:"${WALLPAPER[$2]}" /tmp/"$CONKY_WINDOW"_resized_background.png; then
+			report_error "ERROR: Resize (tiled wallpaper) failed"
+	fi
+}
+
+# Used to create an image identical to onscreen wallpaper for users with a centered wallpaper and cached source is smaller than the screen/monitor dimensions
+function resize_centered {
+	WALL_WIDTH=$(echo "${WALL_RES[$3]}" | cut -d"x" -f1)
+	WALL_HEIGHT=$(echo "${WALL_RES[$3]}" | cut -d"x" -f2)
+	BORDER_WIDTH=$(( ($1-WALL_WIDTH)/2 ))
+	BORDER_HEIGHT=$(( ($2-WALL_HEIGHT)/2 ))
+	if ! convert "${WALLPAPER[$3]}"  -bordercolor "rgba(255,255,255,0)" -border "$BORDER_WIDTH"x"$BORDER_HEIGHT" /tmp/"$CONKY_WINDOW"_resized_background.png; then
+		report_error "ERROR: Resize (centred wallpaper) failed"
+	fi
+}
+# Used to create an image identical to onscreen wallpaper for users with a spanned or scaled wallpaper and cached source is smaller than the screen/monitor dimensions
+function resize_spanned_scaled {
+	if ! convert "${WALLPAPER[$2]}" -resize "$1" -background "rgba(255,255,255,0)" -gravity center -extent "$1" /tmp/"$CONKY_WINDOW"_resized_background.png; then
+		report_error "ERROR: Resize (scaled or spanned wallpaper) failed"
+	fi
+}
+# Used to crop the cached or resized wallpaper to the conky's geometry
+function crop_to_conky_geometry {
+	if ! convert "$1" -crop "$WIDTH"x"$HEIGHT""$2" /tmp/"$CONKY_WINDOW"_background.png; then
+		report_error "ERROR: Crop to conky geometry failed"
+	fi
+}
+# Creates mask and applies blur/contrast/brightness and curved corners to the cropped wallpaper and create the image referenced in the conky config
 function write_wallpaper {
 	# Create mask for curved corners
 	if ! convert -size "$WIDTH"x"$HEIGHT" xc:white -draw "roundRectangle 0,0 $WIDTH,$HEIGHT $CURVINESS,$CURVINESS" /tmp/"$CONKY_WINDOW"_background_mask.png; then
@@ -278,7 +308,7 @@ if [ -f ~/.conky/conky_blurred_background/"$CONKY_WINDOW"_wallpaper_cache ] && [
     LAST_WALLPAPER=$(cat ~/.conky/conky_blurred_background/"$CONKY_WINDOW"_wallpaper_cache)
     counter=0
     for i in "${WALLPAPER[@]}"; do
-        if [ "$LAST_WALLPAPER" == "${WALLPAPER[counter]}" ] ; then
+        if [ "$LAST_WALLPAPER" == "$i" ] ; then
             exit 0
         fi
         (( counter++ ))
@@ -297,22 +327,19 @@ for i in "${WALLPAPER[@]}"; do
 done
 # Scenario 1 - Single wallpaper cache file and dimensions match screen size.
 if [ "${#WALLPAPER[@]}" -eq 1 ] && [ "${WALL_RES[0]}" == "$SCREEN_RES" ]; then
-	# Crop the wallpaper to match conky window geometry
-	if ! convert "${WALLPAPER[0]}" -crop "$WIDTH"x"$HEIGHT""$TOP_LEFT" /tmp/"$CONKY_WINDOW"_background.png; then
-		report_error "ERROR: Initial wallpaper crop to conky geometry failed"
-	fi
+	crop_to_conky_geometry "${WALLPAPER[0]}" "$TOP_LEFT" 
 	write_wallpaper 0
 fi
-# Scenario 2 - Single wallpaper cache but image smaller than screen (implies background setting of Scaled or Spanned with an image that is too small)
+# Scenario 2 - Single wallpaper cache but image smaller than screen (implies background setting of Mosaic, Centred, Scaled or Spanned with an image that is too small to fill the screen)
 if [ "${#WALLPAPER[@]}" -eq 1 ]; then
-	# resize the image to the screen dimensions with empty space transparent.
-	if ! convert "${WALLPAPER[0]}" -resize "$SCREEN_WIDTH"x"$SCREEN_HEIGHT" -background "rgba(255,255,255,0)" -gravity center -extent "$SCREEN_WIDTH"x"$SCREEN_HEIGHT" /tmp/"$CONKY_WINDOW"_resized_background.png; then
-		report_error "ERROR: Initial wallpaper resize failed"
+    if [ "$PICTURE_ASPECT" == "'wallpaper'" ]; then
+		resize_tiled "$SCREEN_WIDTH"x"$SCREEN_HEIGHT" 0
+	elif  [ "$PICTURE_ASPECT" == "'centered'" ]; then
+		resize_centered "$SCREEN_WIDTH" "$SCREEN_HEIGHT" 0
+	else 
+		resize_spanned_scaled "$SCREEN_WIDTH"x"$SCREEN_HEIGHT" 0
 	fi
-	# Crop the wallpaper to match conky window geometry
-	if ! convert /tmp/"$CONKY_WINDOW"_resized_background.png -crop "$WIDTH"x"$HEIGHT""$TOP_LEFT" /tmp/"$CONKY_WINDOW"_background.png; then
-		report_error "ERROR: Initial wallpaper crop to conky geometry failed"
-	fi
+	crop_to_conky_geometry /tmp/"$CONKY_WINDOW"_resized_background.png "$TOP_LEFT" 
 	write_wallpaper 0
 fi
 # Now we have a situation where we have multiple monitors and multiple wall paper cache files.
@@ -331,33 +358,47 @@ TOP_LEFTX=$(echo "$TOP_LEFT" | cut -f2 -d"+")
 TOP_LEFTY=$(echo "$TOP_LEFT" | cut -f3 -d"+")
 counter=0
 for i in "${MONITOR_RES[@]}"; do
-	MON_WIDTH=$(echo "${MONITOR_RES[counter]}" | cut -f1 -d"x")
-	MON_HEIGHT=$(echo "${MONITOR_RES[counter]}" | cut -f2 -d"x" | cut -f1 -d"+")
-	MONX=$(echo "${MONITOR_RES[counter]}" | cut -f2 -d"+")
-	MONY=$(echo "${MONITOR_RES[counter]}" | cut -f3 -d"+")
+	MON_WIDTH=$(echo "$i" | cut -f1 -d"x")
+	MON_HEIGHT=$(echo "$i" | cut -f2 -d"x" | cut -f1 -d"+")
+	MONX=$(echo "$i" | cut -f2 -d"+")
+	MONY=$(echo "$i" | cut -f3 -d"+")
 	# Is the conky fully on this monitor?
 	if [ "$TOP_LEFTX" -ge "$MONX" ] && [ "$TOP_LEFTY" -ge "$MONY" ] && [ $(( TOP_LEFTX+WIDTH )) -lt $(( MONX+MON_WIDTH )) ] && [ $(( TOP_LEFTY+HEIGHT )) -lt $(( MONY+MON_HEIGHT )) ]  ; then
 		# Adjust $TOP_LEFT to reflect relative position on this monitor
 		TOP_LEFT_ADJ="+""$(( TOP_LEFTX - MONX ))""+""$(( TOP_LEFTY - MONY ))"
-		# Is the wallpaper for this monitor the full size of the monitor?
-		if [ "${WALL_RES[counter]}" == "$MON_WIDTH"x"$MON_HEIGHT" ]; then
-			# Crop the wallpaper to match conky window geometry
-			if ! convert "${WALLPAPER[counter]}" -crop "$WIDTH"x"$HEIGHT""$TOP_LEFT_ADJ" /tmp/"$CONKY_WINDOW"_background.png; then
-				report_error "ERROR: Initial wallpaper crop to conky geometry failed"
-			fi
+		# For mosaic / tiled picture aspect we need to recreate a base wallpaper the size of the combined screen resolutions.
+	    if [ "$PICTURE_ASPECT" == "'wallpaper'" ]; then
+			# We need to use the wallpaper cache image with the smallest vertical height as that is what is actually used by the DE to create the onscreen wallpaper.
+		    counter_1=0
+			for w in "${WALL_RES[@]}"; do
+				WALL_HEIGHT[counter_1]=$(echo "$w" | cut -d"x" -f2)
+				if [ "$counter_1" -eq 0 ]; then
+					min="${WALL_HEIGHT[counter_1]}"
+					mincounter=0
+				elif [ "${WALL_HEIGHT[counter_1]}" -lt "$min" ]; then
+					min="${WALL_HEIGHT[counter_1]}"
+					mincounter="$counter_1"
+				fi 					
+				(( counter_1++ ))
+			done
+				resize_tiled "$SCREEN_WIDTH"x"$SCREEN_HEIGHT" $mincounter
+				crop_to_conky_geometry /tmp/"$CONKY_WINDOW"_resized_background.png "$TOP_LEFT"
+				write_wallpaper $counter
+			# otherwise if the cache matches the monitor size use the cache directly
+		elif [ "${WALL_RES[counter]}" == "$MON_WIDTH"x"$MON_HEIGHT" ]; then
+			crop_to_conky_geometry "${WALLPAPER[counter]}" "$TOP_LEFT_ADJ" 
 			write_wallpaper $counter
+		# if it doesn't we are centered, spanned or scaled...
+		elif [ "$PICTURE_ASPECT" == "'centered'" ]; then
+			resize_centered "$MON_WIDTH" "$MON_HEIGHT" $counter
 		else
-			if ! convert "${WALLPAPER[counter]}" -resize "$MON_WIDTH"x"$MON_HEIGHT" -background "rgba(255,255,255,0)" -gravity center -extent "$MON_WIDTH"x"$MON_HEIGHT" /tmp/"$CONKY_WINDOW"_resized_background.png; then
-				report_error "ERROR: Initial wallpaper resize failed"
-			fi
-			# Crop the wallpaper to match conky window geometry
-			if ! convert /tmp/"$CONKY_WINDOW"_resized_background.png -crop "$WIDTH"x"$HEIGHT""$TOP_LEFT_ADJ" /tmp/"$CONKY_WINDOW"_background.png; then
-				report_error "ERROR: Initial wallpaper crop to conky geometry failed"
-			fi
-			write_wallpaper $counter
+			resize_spanned_scaled "$MON_WIDTH"x"$MON_HEIGHT" $counter
 		fi
+			# Crop the wallpaper to match conky window geometry
+			crop_to_conky_geometry /tmp/"$CONKY_WINDOW"_resized_background.png "$TOP_LEFT_ADJ"
+			write_wallpaper $counter
 	fi
 	(( counter++ ))
 done
-# If we get to this line the conky isn't being displayed fully on a single monitor and the monitors each have their own wallpaper cache - We can't handle that situation currently (probably ever!). 
+# If we get to this line the conky isn't being displayed fully on a single monitor and the monitors each have their own wallpaper cache - We can't handle that situation currently. 
 report_error "ERROR: Could not identify a monitor for this conky. Make sure your conky displays fully on a single monitor or use the 'Spanned' option for your background picture aspect."
