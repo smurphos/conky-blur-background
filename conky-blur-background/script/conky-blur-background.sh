@@ -155,12 +155,12 @@ TOP_LEFT=$(echo "$XWININFO_OUTPUT" | grep "Corners:" | awk '{print $2}')
 # Set wallpaper cache location for desktop environment.
 # Currently Cinnamon & MATE only
 if [ "$DESKTOP_SESSION" == "cinnamon" ]; then
+	PICTURE_ASPECT=$(dconf read /org/cinnamon/desktop/background/picture-options)
 	WALLPAPER_CACHE="$HOME/.cache/wallpaper/"
-	SPANNED=0_6_
 	DCONF_KEY=/org/cinnamon/desktop/background/picture-uri
 elif [ "$DESKTOP_SESSION" == "mate" ]; then
+	PICTURE_ASPECT=$(dconf read /org/mate/desktop/background/picture-options)
 	WALLPAPER_CACHE="$HOME/.cache/mate/background/"
-	SPANNED=0_5_
 	DCONF_KEY=/org/mate/desktop/background/picture-filename
 else
 	report_error "ERROR: Unsupported Desktop Environment. Currently only Cinnamon & MATE are supported."
@@ -267,8 +267,8 @@ fi
 
 # Get current wallpaper(s)
 WALLPAPER=("$WALLPAPER_CACHE"*)
-# If cache has multiple wallpapers, but the first one is spanned, clear cache and reload, as the later ones are stale
-if [ "${#WALLPAPER[@]}" -gt 1 ] && echo "${WALLPAPER[0]}" | grep -q "$SPANNED"; then
+# If cache has multiple wallpapers, but current picture aspect is spanned clear the cache, only the first wallpaper is valid.
+if [ "${#WALLPAPER[@]}" -gt 1 ] && [ "$PICTURE_ASPECT" == "'spanned'" ] ; then
 	clear_wallpaper_cache
 	WALLPAPER=("$WALLPAPER_CACHE"*)
 fi
