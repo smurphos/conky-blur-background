@@ -38,9 +38,8 @@
 
 # Example - ${exec conky-blur-background.sh -blurradius=0 -blursigma=8 -brightness=-15 -contrast=+0 -curviness=30}
 
-# Requires packages wmctrl, imagemagick, x11-xserver-utils, x11-utils & dconf-cli
-
-# As written this is for the Cinnamon desktop only and will automatically update on wallpaper changes.
+# Requires packages wmctrl, imagemagick, & dconf-cli. xrandr and xwininfo must also be available as commands.
+# The packages including these commands varies by distro.
 
 # Save the script as ~/.local/bin/conky-blur-background.sh and make executable. Adjust your preferred conky config to meet the above requirements and then execute your conky.
 
@@ -132,18 +131,23 @@ if ! type convert > /dev/null; then
   report_error "ERROR: $(basename "$0") requires imagemagick to be installed."
 fi
 if ! type xrandr > /dev/null; then
-  report_error "ERROR: $(basename "$0") requires x11-xserver-utils to be installed."
+  report_error "ERROR: $(basename "$0") requires command xrandr to be available."
 fi
 if ! type xwininfo > /dev/null; then
-  report_error "ERROR: $(basename "$0") requires x11-utils to be installed."
+  report_error "ERROR: $(basename "$0") requires xwininfo to be available."
 fi
 if ! type dconf > /dev/null; then
   report_error "ERROR: $(basename "$0") requires dconf-cli to be installed."
 fi
 
-# Get command line of parent conky
+# Get command line of parent conky - two command variants are needed depending on underlying conky version
+# This one works in conky 1.10.8 (shipped with Ubuntu LTS 20.04)
 COMMAND_LINE="$(ps -p "$(ps -o ppid= -p "$PPID"|xargs)" -o args --no-headers)"
-# If no conky in command line then error
+# If no conky in command line then use an alternative way to get the command line - this variant works in latest conky version 1.12.2 shipped with Arch
+if ! echo "$COMMAND_LINE" | awk '{print $1}' | grep -q "conky"; then
+	COMMAND_LINE="$(ps -p "$PPID" -o args --no-headers)"
+fi
+# If still no go throw an error.
 if ! echo "$COMMAND_LINE" | awk '{print $1}' | grep -q "conky"; then
 	report_error "ERROR: $(basename "$0") is intended to be executed from a conky config"
 fi

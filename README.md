@@ -6,8 +6,11 @@ A bash script intended to be run from a conky config to create a blurred conky b
 
 The script is currently limited to the following desktop environments.
 
-* Cinnamon (developed and tested on Cinnamon 5.2.7 - Linux Mint 20.3)
-* MATE (partially tested on MATE 1.26 - Linux Mint 20.3)
+* Cinnamon & MATE
+
+* Developed and tested on Cinnamon 5.2.7 - Linux Mint 20.3 with conky version 1.10.8
+* Further development and testing  with Cinnamon 5.2.7 on Manjaro with conky version 1.12.2
+* Tested on MATE 1.26 - Linux Mint 20.3
 
 It is intended to add support for additional Desktop Environments in future.
 
