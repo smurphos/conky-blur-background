@@ -70,7 +70,9 @@ Example of a command within the conky text using arguments:
 
 ## Dependencies
 
-The script requires the packages conky-all, wmctrl, imagemagick, x11-xserver-utils, x11-utils & dconf-cli to be installed.
+The script requires the packages conky-all, wmctrl, imagemagick & dconf-cli to be installed.
+
+The commands xrandr and xwininfo must also be available on the system. The packages that provide these commands varies by distro.
 
 ## Installation via the terminal.
 
